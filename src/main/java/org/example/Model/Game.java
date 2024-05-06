@@ -42,7 +42,7 @@ public class Game {
         this.numberOfSymbols = 0;
     }
 
-    public Builder builder(){
+    public static Builder builder(){
         return new Builder();
     }
 
@@ -143,7 +143,7 @@ public class Game {
         private void validateNumberOfPlayers(){
             //N, no bot, players-->N-1
             //N, bot, players -->N-2
-            if(players.size()< currentBoard.getDimension()-2 || players.size() >= currentBoard.getDimension()){
+            if(players.size()< dimension-2 || players.size() >= dimension){
                 throw new InvalidPlayerSizeException("Player size should ne N-2 or N-1 as per board size");
             }
 
