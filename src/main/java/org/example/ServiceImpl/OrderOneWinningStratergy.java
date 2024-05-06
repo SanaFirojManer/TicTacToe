@@ -22,12 +22,15 @@ public class OrderOneWinningStratergy implements WinningStrategy {
 
     private HashMap<Character,Integer> rightDigonal;
 
+    private HashMap<Character,Integer> cornerHashMap;
+
     public OrderOneWinningStratergy(int dimension) {
         this.dimension = dimension;
         this.rowHashMapLlist = new ArrayList<>();
         this.colHashMapList = new ArrayList<>();
         this.leftDigonal = new HashMap<>();
         this.rightDigonal = new HashMap<>();
+        this.cornerHashMap = new HashMap<>();
 
         for(int i=0;i<dimension;i++){
             rowHashMapLlist.add(new HashMap<>());
@@ -99,11 +102,13 @@ public class OrderOneWinningStratergy implements WinningStrategy {
     }
 
     private boolean winnerCheckForCorners(List<List<Cell>> matrix, char symbol){
-        return ((matrix.get(0).get(0).getPlayer().getSymbol() == symbol)
-                && (matrix.get(0).get(dimension-1).getPlayer().getSymbol() ==symbol)
-                && (matrix.get(dimension-1).get(0).getPlayer().getSymbol() == symbol)
-                && (matrix.get(dimension-1).get(dimension-1).getPlayer().getSymbol() == symbol)
-        );
+        if(cornerHashMap.containsKey(symbol)){
+            cornerHashMap.put(symbol,cornerHashMap.get(symbol)+1);
+            return cornerHashMap.get(symbol)== 4;
+        } else {
+            cornerHashMap.put(symbol,1);
+        }
+        return  false;
     }
 
     private boolean checkLeftDigonal(int row, int col){

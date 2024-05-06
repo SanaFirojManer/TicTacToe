@@ -6,8 +6,8 @@ import org.example.Model.Enum.PlayerType;
 public class Bot extends Player{
     private BotDifficultyLevel botDifficultyLevel;
 
-    public Bot(int id, String name, char symbol, PlayerType playerType, BotDifficultyLevel botDifficultyLevel) {
-        super(id, name, symbol, playerType.BOT);
+    public Bot(int id, char symbol, BotDifficultyLevel botDifficultyLevel) {
+        super(id, "CHITTI", symbol, PlayerType.BOT);
         this.botDifficultyLevel = botDifficultyLevel;
     }
 

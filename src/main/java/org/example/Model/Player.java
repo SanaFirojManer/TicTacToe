@@ -21,6 +21,14 @@ public class Player {
         this.playerType = playerType;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Player() {
     }
 

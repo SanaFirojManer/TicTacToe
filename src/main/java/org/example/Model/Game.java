@@ -1,8 +1,9 @@
 package org.example.Model;
 
+
 import org.example.Exception.InvalidBotCountException;
 import org.example.Exception.InvalidPlayerSizeException;
-import org.example.Exception.InvalidSymbolSetupExxception;
+import org.example.Exception.InvalidSymbolSetupException;
 import org.example.Model.Enum.GameStatus;
 import org.example.Model.Enum.PlayerType;
 import org.example.Service.WinningStratergiy.WinningStrategy;
@@ -12,34 +13,24 @@ import java.util.HashSet;
 import java.util.List;
 
 public class Game {
-
     private Board currentBoard;
-
     private List<Player> players;
-
-    private GameStatus gameStatus;
-
     private Player currentPlayer;
-
+    private GameStatus gameStatus;
     private List<Move> moves;
-
     private List<Board> boardStates;
-
     private WinningStrategy winningStrategy;
-
     private int numberOfSymbols;
 
-
-    //builder design pattern
-    private Game(Board currentBoard, List<Player> payers, WinningStrategy winningStrategy) {
+    private Game(Board currentBoard, List<Player> players, WinningStrategy winningStrategy) {
         this.currentBoard = currentBoard;
-        this.players = payers;
-       this.currentPlayer = null;
-        this.gameStatus = gameStatus;
+        this.players = players;
+        this.currentPlayer = null;
+        this.gameStatus = GameStatus.IN_PROGRESS;
         this.moves = new ArrayList<>();
         this.boardStates = new ArrayList<>();
         this.winningStrategy = winningStrategy;
-        this.numberOfSymbols = 0;
+        this.numberOfSymbols = players.size();
     }
 
     public static Builder builder(){
@@ -50,13 +41,13 @@ public class Game {
         return currentBoard;
     }
 
-    public List<Player> getPayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-//    public Player getCurrentPlayer() {
-//        return currentPlayer;
-//    }
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
 
     public GameStatus getGameStatus() {
         return gameStatus;
@@ -82,13 +73,13 @@ public class Game {
         this.currentBoard = currentBoard;
     }
 
-    public void setPayers(List<Player> payers) {
-        this.players = payers;
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
-//    public void setCurrentPlayer(Player currentPlayer) {
-//        this.currentPlayer = currentPlayer;
-//    }
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
 
     public void setGameStatus(GameStatus gameStatus) {
         this.gameStatus = gameStatus;
@@ -111,24 +102,20 @@ public class Game {
     }
 
     public static class Builder{
-        private Board currentBoard;
-
-        private List<Player> players;
-
-        private WinningStrategy winningStrategy;
-
         private int dimension;
+        private Board currentBoard;
+        private List<Player> players;
+        private WinningStrategy winningStrategy;
 
         public Builder setCurrentBoard(Board currentBoard) {
             this.currentBoard = currentBoard;
             return this;
         }
 
-        public Builder setPayers(List<Player> payers) {
-            this.players = payers;
+        public Builder setPlayers(List<Player> players) {
+            this.players = players;
             return this;
         }
-
 
         public Builder setWinningStrategy(WinningStrategy winningStrategy) {
             this.winningStrategy = winningStrategy;
@@ -137,51 +124,52 @@ public class Game {
 
         public Builder setDimension(int dimension) {
             this.dimension = dimension;
-            return this ;
+            return this;
         }
 
         private void validateNumberOfPlayers(){
-            //N, no bot, players-->N-1
-            //N, bot, players -->N-2
-            if(players.size()< dimension-2 || players.size() >= dimension){
-                throw new InvalidPlayerSizeException("Player size should ne N-2 or N-1 as per board size");
+            // N, no bot -> players = N-1
+            // N, bot present -> players = N-2
+            if(players.size() < dimension - 2 || players.size() >= dimension){
+                throw new InvalidPlayerSizeException("Player size should be N-2 or N-1 as per board size");
             }
-
         }
 
-        private void validatePlayerSymbol(){
+        private void validatePlayerSymbols(){
             HashSet<Character> symbols = new HashSet<>();
+            //TODO : convert the below code in this method into Lambda Expression using streams
             for(Player player : players){
                 symbols.add(player.getSymbol());
             }
-
             if(symbols.size() != players.size()){
-                throw new InvalidSymbolSetupExxception("There should be unique symbol for all the plyayers ");
+                throw new InvalidSymbolSetupException("There should be unique symbols for all the players");
             }
         }
 
         private void validateBotCount(){
-            int botCount =0;
+            int botCount = 0;
+            //TODO : convert the below code in this method into Lambda Expression using streams
             for(Player player : players){
                 if(player.getPlayerType().equals(PlayerType.BOT)){
                     botCount++;
                 }
             }
-
-            if(botCount > 1 || botCount<0){
-                throw new InvalidBotCountException("We can have maximum one bot a game");
+            if(botCount > 1 || botCount < 0){
+                throw new InvalidBotCountException("We can have maximum 1 bot per game");
             }
         }
+
+        //TODO: add a validation for dimension, it should be from 3 to 10.
 
         private void validate(){
             validateBotCount();
             validateNumberOfPlayers();
-            validatePlayerSymbol();
+            validatePlayerSymbols();
         }
 
         public Game build(){
             validate();
-            return new Game(new Board(dimension),players,winningStrategy);
+            return new Game(new Board(dimension), players, winningStrategy);
         }
     }
 }
